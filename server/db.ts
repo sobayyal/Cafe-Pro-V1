@@ -1,4 +1,3 @@
-// Modified server/db.ts file
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
@@ -12,11 +11,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Fix the SSL configuration to use the correct type
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: true  // This is the correct type for SSL verification
+    rejectUnauthorized: true  // Correct type for SSL verification
   }
 });
 export const db = drizzle({ client: pool, schema });
