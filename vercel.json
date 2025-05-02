@@ -1,8 +1,14 @@
 {
-  "buildCommand": "npm run vercel-build",
+  "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
-  "framework": "vite",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
-  ]
+    { "source": "/api/(.*)", "destination": "/api/server.js" }
+  ],
+  "functions": {
+    "api/server.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }
