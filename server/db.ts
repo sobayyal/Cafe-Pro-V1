@@ -1,9 +1,9 @@
+// Modified server/db.ts file
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
-// This line is important for serverless environments like Vercel
 neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
@@ -12,9 +12,11 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Use the SSL configuration as suggested by Neon
+// Fix the SSL configuration to use the correct type
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  ssl: 'verify-full'
+  ssl: {
+    rejectUnauthorized: true  // This is the correct type for SSL verification
+  }
 });
 export const db = drizzle({ client: pool, schema });
