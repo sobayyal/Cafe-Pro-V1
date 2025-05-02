@@ -1,0 +1,19 @@
+name: Push Database Schema
+
+on:
+  workflow_dispatch:
+
+jobs:
+  db-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Push schema
+        run: npm run db:push
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
