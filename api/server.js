@@ -1,6 +1,4 @@
-// api/server.js
 import express from 'express';
-import bodyParser from 'express';
 import session from 'express-session';
 import pgSession from 'connect-pg-simple';
 import passport from 'passport';
@@ -13,18 +11,18 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 
-// Set up database-backed session store for serverless environment
+// Set up database-backed session store
 const PgStore = pgSession(session);
 
-// Session configuration
+// Session configuration with database storage
 app.use(
   session({
     store: new PgStore({
       pool: pool,
       createTableIfMissing: true,
-      tableName: 'session' // Default table name
+      tableName: 'session'
     }),
     secret: process.env.SESSION_SECRET || "cafe-management-secret",
     resave: false,
@@ -36,7 +34,7 @@ app.use(
   })
 );
 
-// Passport setup
+// Set up passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -71,18 +69,18 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// Define authentication routes
+// Authentication routes
 app.post("/api/auth/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
-      return next(err);
+      return res.status(500).json({ message: err.message });
     }
     if (!user) {
       return res.status(401).json({ message: info?.message || "Authentication failed" });
     }
     req.logIn(user, (err) => {
       if (err) {
-        return next(err);
+        return res.status(500).json({ message: err.message });
       }
       return res.json({ 
         id: user.id, 
@@ -115,5 +113,9 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
-// Export the Express API
+// Add other API routes from server/routes.ts
+// Note: This is a simplified version - you would need to import 
+// and adapt your existing routes from server/routes.ts
+
+// Export the Express API for Vercel serverless function
 export default app;
